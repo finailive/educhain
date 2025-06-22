@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liên hệ - EduChain</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 800px; margin: auto; }
+    nav { background: #111827; padding: 1rem; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 15px; font-weight: bold; }
+    form { display: grid; gap: 1rem; }
+    input, textarea { padding: 10px; width: 100%; font-size: 1rem; }
+    button { padding: 10px 20px; font-size: 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">🏠 Trang chủ</a>
+    <a href="huongdan.html">📘 Hướng dẫn</a>
+    <a href="lienhe.html">📨 Liên hệ</a>
+  </nav>
+
+  <h1>📨 Liên hệ với chúng tôi</h1>
+  <p>Nếu bạn có bất kỳ câu hỏi, góp ý hoặc cần hỗ trợ, vui lòng để lại thông tin:</p>
+
+  <form onsubmit="alert('Đã gửi thành công!'); return false;">
+    <input type="text" placeholder="Họ và tên" required />
+    <input type="email" placeholder="Email liên hệ" required />
+    <textarea placeholder="Nội dung liên hệ" rows="6" required></textarea>
+    <button type="submit">Gửi liên hệ</button>
+  </form>
+</body>
+</html>
