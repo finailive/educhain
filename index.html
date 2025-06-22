@@ -1,9 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>EduChain</title>
+  <meta charset="UTF-8" />
+  <title>EduChain - Unlock Google Drive via Web3</title>
+  <script src="https://unpkg.com/ethers@6.6.0/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3modal@3.6.5/dist/index.js"></script>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 600px; margin: auto; }
+    #formContainer { display: none; margin-top: 20px; }
+    input { padding: 8px; width: 100%; margin: 10px 0; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <h1>Chào mừng đến với EduChain!</h1>
+  <h2>🚀 Mở khóa tài liệu bằng ví Web3</h2>
+  <button id="connectBtn">🔌 Kết nối ví</button>
+  <p id="wallet"></p>
+  <button id="payBtn" disabled>💰 Thanh toán phí gas $5</button>
+
+  <div id="formContainer">
+    <h3>📩 Nhập Gmail để nhận quyền truy cập Google Drive:</h3>
+    <input id="emailInput" placeholder="your.email@gmail.com" />
+    <button onclick="submitEmail()">Gửi email</button>
+  </div>
+
+  <script>
+    const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE"; // 🛠 Cập nhật địa chỉ thật sau khi deploy
+    const admin = "0xADMIN_WALLET_HERE"; // 🛠 Cập nhật địa chỉ ví admin
+    const abi = [{
+      "inputs": [
+        { "internalType": "address payable", "name": "ref1", "type": "address" },
+        { "internalType": "address payable", "name": "ref2", "type": "address" }
+      ],
+      "name": "payWithReferral",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    }];
+
+    let provider, signer, web3Modal, walletAddress;
+
+    async function init() {
+      web3Modal = new window.WalletConnectModal.Web3Modal({
+        projectId: "YOUR_WALLETCONNECT_PROJECT_ID", // 🛠 Lấy tại https://cloud.walletconnect.com/
+        themeMode: "light",
+        chains: [{ chainId: 56, name: "BNB", rpcUrl: "https://bsc-dataseed.binance.org/" }]
+      });
+    }
+
+    document.getElementById("connectBtn").onclick = async () => {
+      const session = await web3Modal.connect();
+      provider = new ethers.BrowserProvider(session);
+      signer = await provider.getSigner();
+      walletAddress = await signer.getAddress();
+      document.getElementById("wallet").textContent = `✅ Đã kết nối ví: ${walletAddress}`;
+      document.getElementById("payBtn").disabled = false;
+    };
+
+    async function getBNBPrice() {
+      const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd");
+      const data = await res.json();
+      return data.binancecoin.usd;
+    }
+
+    document.getElementById("payBtn").onclick = async () => {
+      const bnbPrice = await getBNBPrice();
+      const amountBNB = (5 / bnbPrice).toFixed(6); // đổi $5 sang BNB
+      const params = new URLSearchParams(window.location.search);
+      const ref1 = params.get("ref1") || admin;
+      const ref2 = params.get("ref2") || "0x0000000000000000000000000000000000000000";
+
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+      try {
+        const tx = await contract.payWithReferral(ref1, ref2, {
+          value: ethers.parseEther(amountBNB)
+        });
+        console.log("Tx sent:", tx.hash);
+
+        // ✅ Hiện form nhập Gmail ngay sau khi gửi tx
+        document.getElementById("formContainer").style.display = "block";
+
+      } catch (err) {
+        alert("❌ Giao dịch bị huỷ hoặc lỗi.");
+        console.error(err);
+      }
+    };
+
+    function submitEmail() {
+      const email = document.getElementById("emailInput").value;
+      if (!email.includes("@")) return alert("Email không hợp lệ!");
+      fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec", {
+        method: "POST",
+        body: new URLSearchParams({
+          email: email,
+          wallet: walletAddress
+        })
+      }).then(() => {
+        alert("✅ Đã gửi email! Kiểm tra hộp thư của bạn.");
+      });
+    }
+
+    init();
+  </script>
 </body>
 </html>
