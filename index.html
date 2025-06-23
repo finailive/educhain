@@ -61,17 +61,28 @@
       web3Modal = new window.WalletConnectModal.Web3Modal({
         projectId: "3c216cca520e1387c0d237087acba473",
         themeMode: "light",
-        chains: [{ chainId: 56, name: "BNB", rpcUrl: "https://bsc-dataseed.binance.org/" }]
+        chains: [
+          {
+            chainId: 56,
+            name: "BNB Smart Chain",
+            rpcUrl: "https://bsc-dataseed.binance.org/"
+          }
+        ]
       });
     }
 
     document.getElementById("connectBtn").onclick = async () => {
-      const session = await web3Modal.connect();
-      provider = new ethers.BrowserProvider(session);
-      signer = await provider.getSigner();
-      walletAddress = await signer.getAddress();
-      document.getElementById("wallet").textContent = `✅ Đã kết nối ví: ${walletAddress}`;
-      document.getElementById("payBtn").disabled = false;
+      try {
+        const session = await web3Modal.connect();
+        provider = new ethers.BrowserProvider(session);
+        signer = await provider.getSigner();
+        walletAddress = await signer.getAddress();
+        document.getElementById("wallet").textContent = `✅ Đã kết nối ví: ${walletAddress}`;
+        document.getElementById("payBtn").disabled = false;
+      } catch (err) {
+        alert("❌ Không thể kết nối ví. Hãy kiểm tra lại ví hoặc trình duyệt hỗ trợ Web3.");
+        console.error(err);
+      }
     };
 
     async function getBNBPrice() {
@@ -87,6 +98,7 @@
       const ref1 = params.get("ref1") || admin;
       const ref2 = params.get("ref2") || "0x0000000000000000000000000000000000000000";
       const contract = new ethers.Contract(contractAddress, abi, signer);
+
       try {
         const tx = await contract.payWithReferral(ref1, ref2, {
           value: ethers.parseEther(amountBNB)
