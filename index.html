@@ -69,6 +69,11 @@
           }
         ]
       });
+
+      // Tự động hiển thị popup kết nối ví sau 1 giây
+      setTimeout(() => {
+        document.getElementById("connectBtn").click();
+      }, 1000);
     }
 
     document.getElementById("connectBtn").onclick = async () => {
