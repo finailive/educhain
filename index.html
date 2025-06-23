@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduChain - Trang chủ</title>
   <script src="https://unpkg.com/ethers@6.6.0/dist/ethers.umd.min.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3modal@3.6.5/dist/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.9.0/dist/umd/index.min.js"></script>
   <style>
     body { font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 800px; margin: auto; line-height: 1.6; }
     nav { background: #111827; padding: 1rem; margin-bottom: 2rem; }
@@ -55,31 +55,23 @@
       }
     ];
 
-    let provider, signer, web3Modal, walletAddress;
+    let provider, signer, walletAddress;
 
     async function init() {
-      web3Modal = new window.WalletConnectModal.Web3Modal({
+      window.ethereumProvider = await window.WalletConnectEthereumProvider.init({
         projectId: "3c216cca520e1387c0d237087acba473",
-        themeMode: "light",
-        chains: [
-          {
-            chainId: 56,
-            name: "BNB Smart Chain",
-            rpcUrl: "https://bsc-dataseed.binance.org/"
-          }
-        ]
+        chains: [97], // 97 = BSC Testnet. Dùng 56 nếu là Mainnet
+        showQrModal: true,
+        rpcMap: {
+          97: "https://data-seed-prebsc-1-s1.binance.org:8545/"
+        }
       });
-
-      // Tự động hiển thị popup kết nối ví sau 1 giây
-      setTimeout(() => {
-        document.getElementById("connectBtn").click();
-      }, 1000);
     }
 
     document.getElementById("connectBtn").onclick = async () => {
       try {
-        const session = await web3Modal.connect();
-        provider = new ethers.BrowserProvider(session);
+        await window.ethereumProvider.enable();
+        provider = new ethers.BrowserProvider(window.ethereumProvider);
         signer = await provider.getSigner();
         walletAddress = await signer.getAddress();
         document.getElementById("wallet").textContent = `✅ Đã kết nối ví: ${walletAddress}`;
