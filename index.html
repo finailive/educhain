@@ -1,63 +1,18 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduChain - Tải khóa học miễn phí</title>
+  <meta charset="UTF-8" />
+  <title>EduChain - Unlock Google Drive via Web3</title>
   <script src="https://unpkg.com/ethers@6.6.0/dist/ethers.umd.min.js"></script>
   <script src="https://unpkg.com/@walletconnect/web3modal@3.6.5/dist/index.js"></script>
   <style>
-    body { font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 1000px; margin: auto; line-height: 1.6; background: #f9f9f9; }
-    nav { background: #111827; padding: 1rem; margin-bottom: 2rem; text-align: center; }
-    nav a { color: #fff; text-decoration: none; margin: 0 15px; font-weight: bold; }
-    h1 { text-align: center; color: #111827; margin-bottom: 1rem; }
-    .course-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-    .course { background: white; border-radius: 8px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .course h3 { margin-top: 0; color: #1f2937; }
-    .course p { margin-bottom: 0.5rem; }
-    .course a { display: inline-block; margin-top: 0.5rem; color: #1d4ed8; text-decoration: none; font-weight: 500; }
-    footer { text-align: center; margin-top: 3rem; color: #6b7280; font-size: 0.9rem; }
+    body { font-family: sans-serif; padding: 2em; max-width: 600px; margin: auto; }
     #formContainer { display: none; margin-top: 20px; }
     input { padding: 8px; width: 100%; margin: 10px 0; }
     button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <nav>
-    <a href="index.html">🏠 Trang chủ</a>
-    <a href="huongdan.html">📘 Hướng dẫn</a>
-    <a href="about.html">ℹ️ Giới thiệu</a>
-    <a href="lienhe.html">📨 Liên hệ</a>
-  </nav>
-
-  <h1>🎓 Khóa học miễn phí trên EduChain</h1>
-  <p style="text-align: center;">Tất cả tài liệu được chia sẻ qua Google Drive, bạn chỉ cần kết nối ví Web3 và trả phí gas $5 BNB để tải.</p>
-
-  <div class="course-list">
-    <div class="course">
-      <h3>🔥 Khóa học Python cơ bản</h3>
-      <p>Lập trình Python từ con số 0, phù hợp cho người mới bắt đầu.</p>
-      <a href="#">Tải miễn phí</a>
-    </div>
-    <div class="course">
-      <h3>📈 Phân tích dữ liệu với Excel</h3>
-      <p>Học cách làm chủ Excel từ cơ bản đến nâng cao với ví dụ thực tế.</p>
-      <a href="#">Tải miễn phí</a>
-    </div>
-    <div class="course">
-      <h3>💼 Digital Marketing toàn diện</h3>
-      <p>Tất cả về SEO, Facebook Ads, Email Marketing và hơn thế nữa.</p>
-      <a href="#">Tải miễn phí</a>
-    </div>
-    <div class="course">
-      <h3>🎨 Thiết kế Canva nâng cao</h3>
-      <p>Tăng kỹ năng thiết kế của bạn với kho tài nguyên và hướng dẫn chi tiết.</p>
-      <a href="#">Tải miễn phí</a>
-    </div>
-  </div>
-
-  <hr style="margin: 40px 0">
-
   <h2>🚀 Mở khóa tài liệu bằng ví Web3</h2>
   <button id="connectBtn">🔌 Kết nối ví</button>
   <p id="wallet"></p>
@@ -69,13 +24,9 @@
     <button onclick="submitEmail()">Gửi email</button>
   </div>
 
-  <footer>
-    © 2025 EduChain.
-  </footer>
-
   <script>
-    const contractAddress = "YOUR_CONTRACT_ADDRESS_HERE";
-    const admin = "0xADMIN_WALLET_HERE";
+    const contractAddress = "0xc0bA99C1Ba6bBD24D23c3fCc18534435f975c2cC";
+    const admin = "0x324c8F4844315fb99Be5CC44c1f65D2b4DD402A1";
     const abi = [{
       "inputs": [
         { "internalType": "address payable", "name": "ref1", "type": "address" },
@@ -91,9 +42,9 @@
 
     async function init() {
       web3Modal = new window.WalletConnectModal.Web3Modal({
-        projectId: "YOUR_WALLETCONNECT_PROJECT_ID",
+        projectId: "YOUR_WALLETCONNECT_PROJECT_ID", // cần thay sau
         themeMode: "light",
-        chains: [{ chainId: 56, name: "BNB", rpcUrl: "https://bsc-dataseed.binance.org/" }]
+        chains: [{ chainId: 97, name: "BNB Testnet", rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/" }]
       });
     }
 
@@ -114,7 +65,7 @@
 
     document.getElementById("payBtn").onclick = async () => {
       const bnbPrice = await getBNBPrice();
-      const amountBNB = (5 / bnbPrice).toFixed(6);
+      const amountBNB = (5 / bnbPrice).toFixed(6); // đổi $5 sang BNB
       const params = new URLSearchParams(window.location.search);
       const ref1 = params.get("ref1") || admin;
       const ref2 = params.get("ref2") || "0x0000000000000000000000000000000000000000";
