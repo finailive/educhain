@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>EduChain - Unlock Google Drive via Web3</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduChain - Trang chủ</title>
   <script src="https://unpkg.com/ethers@6.6.0/dist/ethers.umd.min.js"></script>
   <script src="https://unpkg.com/@walletconnect/web3modal@3.6.5/dist/index.js"></script>
   <style>
-    body { font-family: sans-serif; padding: 2em; max-width: 600px; margin: auto; }
+    body { font-family: 'Segoe UI', sans-serif; padding: 20px; max-width: 800px; margin: auto; line-height: 1.6; }
+    nav { background: #111827; padding: 1rem; margin-bottom: 2rem; }
+    nav a { color: #fff; text-decoration: none; margin-right: 15px; font-weight: bold; }
+    h1, h2 { color: #111827; }
+    ul { padding-left: 1.5rem; }
     #formContainer { display: none; margin-top: 20px; }
     input { padding: 8px; width: 100%; margin: 10px 0; }
     button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
   </style>
 </head>
 <body>
+  <nav>
+    <a href="index.html">🏠 Trang chủ</a>
+    <a href="huongdan.html">📘 Hướng dẫn</a>
+    <a href="lienhe.html">📨 Liên hệ</a>
+    <a href="about.html">ℹ️ Giới thiệu</a>
+  </nav>
+
+  <h1>📚 Tài liệu học tập miễn phí</h1>
+  <p>Chọn khóa học bên dưới để tải về miễn phí bằng ví Web3.</p>
+
   <h2>🚀 Mở khóa tài liệu bằng ví Web3</h2>
   <button id="connectBtn">🔌 Kết nối ví</button>
   <p id="wallet"></p>
@@ -27,24 +42,26 @@
   <script>
     const contractAddress = "0xc0bA99C1Ba6bBD24D23c3fCc18534435f975c2cC";
     const admin = "0x324c8F4844315fb99Be5CC44c1f65D2b4DD402A1";
-    const abi = [{
-      "inputs": [
-        { "internalType": "address payable", "name": "ref1", "type": "address" },
-        { "internalType": "address payable", "name": "ref2", "type": "address" }
-      ],
-      "name": "payWithReferral",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    }];
+    const abi = [
+      {
+        "inputs": [
+          { "internalType": "address payable", "name": "ref1", "type": "address" },
+          { "internalType": "address payable", "name": "ref2", "type": "address" }
+        ],
+        "name": "payWithReferral",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+      }
+    ];
 
     let provider, signer, web3Modal, walletAddress;
 
     async function init() {
       web3Modal = new window.WalletConnectModal.Web3Modal({
-        projectId: "YOUR_WALLETCONNECT_PROJECT_ID", // cần thay sau
+        projectId: "YOUR_WALLETCONNECT_PROJECT_ID",
         themeMode: "light",
-        chains: [{ chainId: 97, name: "BNB Testnet", rpcUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/" }]
+        chains: [{ chainId: 56, name: "BNB", rpcUrl: "https://bsc-dataseed.binance.org/" }]
       });
     }
 
@@ -65,11 +82,10 @@
 
     document.getElementById("payBtn").onclick = async () => {
       const bnbPrice = await getBNBPrice();
-      const amountBNB = (5 / bnbPrice).toFixed(6); // đổi $5 sang BNB
+      const amountBNB = (5 / bnbPrice).toFixed(6);
       const params = new URLSearchParams(window.location.search);
       const ref1 = params.get("ref1") || admin;
       const ref2 = params.get("ref2") || "0x0000000000000000000000000000000000000000";
-
       const contract = new ethers.Contract(contractAddress, abi, signer);
       try {
         const tx = await contract.payWithReferral(ref1, ref2, {
@@ -78,7 +94,7 @@
         console.log("Tx sent:", tx.hash);
         document.getElementById("formContainer").style.display = "block";
       } catch (err) {
-        alert("❌ Giao dịch bị huỷ hoặc lỗi.");
+        alert("❌ Giao dịch thất bại hoặc bị huỷ.");
         console.error(err);
       }
     };
